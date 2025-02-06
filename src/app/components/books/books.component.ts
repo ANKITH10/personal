@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // Import FormsModule
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router'; // Import Router for navigation
 
 @Component({
   selector: 'app-books',
   templateUrl: './books.component.html',
   styleUrls: ['./books.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule], // Add FormsModule here
+  imports: [CommonModule, FormsModule],
 })
 export class BooksComponent implements OnInit {
   books = [
@@ -19,9 +20,9 @@ export class BooksComponent implements OnInit {
   ];
 
   searchQuery: string = '';
-  filteredBooks = [...this.books]; // Copy of books to filter
+  filteredBooks = [...this.books];
 
-  constructor() {}
+  constructor(private router: Router) {} // Inject Router for navigation
 
   ngOnInit(): void {}
 
@@ -32,6 +33,16 @@ export class BooksComponent implements OnInit {
   }
 
   addToCart(book: any) {
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    cart.push(book);
+    localStorage.setItem('cart', JSON.stringify(cart));
+
+    window.dispatchEvent(new Event('storage')); // Notify navbar to update count
+
     alert(`"${book.title}" added to cart!`);
+  }
+
+  goToCart() {
+    this.router.navigate(['/cart']); // Navigate to cart page
   }
 }

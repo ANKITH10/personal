@@ -5,6 +5,8 @@
       <input type="text" [(ngModel)]="searchQuery" (input)="filterBooks()" placeholder="Search books by title..." class="search-box">
     </div>
   
+    <button class="btn btn-secondary cart-btn" (click)="goToCart()">🛒 View Cart</button>
+  
     <div class="book-container">
       <div *ngFor="let book of filteredBooks" class="book-card">
         <img [src]="book.imageUrl" alt="{{ book.title }}" class="book-image" />
