@@ -1,8 +1,12 @@
 <div class="book-list">
     <h2>Available Books</h2>
   
+    <div class="search-container">
+      <input type="text" [(ngModel)]="searchQuery" (input)="filterBooks()" placeholder="Search books by title..." class="search-box">
+    </div>
+  
     <div class="book-container">
-      <div *ngFor="let book of books" class="book-card">
+      <div *ngFor="let book of filteredBooks" class="book-card">
         <img [src]="book.imageUrl" alt="{{ book.title }}" class="book-image" />
         <h3>{{ book.title }}</h3>
         <p>Author: {{ book.author }}</p>
@@ -10,5 +14,7 @@
         <button (click)="addToCart(book)" class="btn btn-primary">Add to Cart</button>
       </div>
     </div>
+  
+    <div *ngIf="filteredBooks.length === 0" class="no-results">No books found.</div>
   </div>
   
