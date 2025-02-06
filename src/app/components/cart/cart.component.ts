@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
@@ -11,7 +12,7 @@ import { CommonModule } from '@angular/common';
 export class CartComponent implements OnInit {
   cart: any[] = [];
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.loadCart();
@@ -25,5 +26,9 @@ export class CartComponent implements OnInit {
     this.cart.splice(index, 1);
     localStorage.setItem('cart', JSON.stringify(this.cart));
     window.dispatchEvent(new Event('storage')); // Update cart count
+  }
+
+  proceedToBuy() {
+    this.router.navigate(['/place-order']);
   }
 }

@@ -1,0 +1,33 @@
+<div class="admin-container">
+    <h2>Admin Dashboard</h2>
+  
+    <!-- Users Section -->
+    <div class="admin-section">
+      <h3>Users</h3>
+      <div *ngFor="let user of users" class="user-row">
+        <div class="user-info">
+          <p>ID: {{ user.id }}, Name: {{ user.name }}, Email: {{ user.email }}</p>
+        </div>
+        <div class="user-actions">
+          <button (click)="makeAdmin(user.id)" class="btn-admin">Promote to Admin</button>
+          <button (click)="deleteUser(user.id)" class="btn-delete">Delete</button>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Add Book Section -->
+    <div class="admin-section">
+      <h3>Add a Book</h3>
+      <form (ngSubmit)="addBook()">
+        <input type="text" placeholder="Title" [(ngModel)]="newBook.title" name="title" required />
+        <input type="text" placeholder="Author" [(ngModel)]="newBook.author" name="author" required />
+        <input type="number" placeholder="Price" [(ngModel)]="newBook.price" name="price" required />
+        
+        <!-- File input for image -->
+        <input type="file" (change)="onFileSelected($event)" />
+        
+        <button type="submit">Add Book</button>
+      </form>
+    </div>
+  </div>
+  

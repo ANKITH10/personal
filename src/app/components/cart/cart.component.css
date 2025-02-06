@@ -48,6 +48,25 @@
     margin-top: 20px;
   }
   
+  /* Proceed to Buy Section */
+  .checkout-section {
+    margin-top: 30px;
+  }
+  
+  .btn-proceed {
+    padding: 12px 20px;
+    font-size: 18px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .btn-proceed:hover {
+    background-color: #0056b3;
+  }
+  
   /* Responsive Design */
   @media (max-width: 768px) {
     .cart-container {

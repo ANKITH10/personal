@@ -1,52 +1,44 @@
 import { Component } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, ActivatedRoute } from '@angular/router';
+import { HttpClient, HttpClientModule } from '@angular/common/http'; // Import HttpClientModule
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css'],
   standalone: true,
-  imports: [FormsModule, HttpClientModule] // Ensure HttpClientModule is imported
+  imports: [CommonModule, FormsModule, HttpClientModule], // Add HttpClientModule here
 })
 export class LoginComponent {
-  username: string = ''; // Changed from email to username
+  username: string = '';
   password: string = '';
+  returnUrl: string = '/books'; // Default to books page
 
-  constructor(private http: HttpClient) {}
+  constructor(private router: Router, private route: ActivatedRoute, private http: HttpClient) {}
+
+  ngOnInit(): void {
+    // Get returnUrl from query params
+    this.route.queryParams.subscribe(params => {
+      if (params['returnUrl']) {
+        this.returnUrl = params['returnUrl'];
+      }
+    });
+  }
 
   login() {
     const url = 'http://localhost:8080/api/auth/login';
-    const payload = { 
-      username: this.username.trim(), // Ensure field name is "username"
-      password: this.password.trim()
-    };
+    const payload = { username: this.username, password: this.password };
 
-    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
-
-    this.http.post(url, JSON.stringify(payload), { headers }).subscribe({
+    this.http.post(url, payload).subscribe({
       next: (response: any) => {
-        console.log('✅ Login successful:', response);
-        if (response.token) {
-          localStorage.setItem('token', response.token);
-          alert('Login successful! Token stored.');
-        } else {
-          alert('Login successful, but no token received.');
-        }
+        localStorage.setItem('token', response.token); // Save token
+        alert('Login successful!');
+        this.router.navigate([this.returnUrl]); // Redirect to returnUrl
       },
-      error: (error) => {
-        console.error('❌ Login failed:', error);
-
-        let errorMessage = 'Login failed!';
-        if (error.status === 401) {
-          errorMessage = 'Invalid username or password';
-        } else if (error.status === 500) {
-          errorMessage = 'Server error, please try again later.';
-        } else if (error.error) {
-          errorMessage = error.error;
-        }
-
-        alert(errorMessage);
+      error: () => {
+        alert('Login failed! Check your credentials.');
       },
     });
   }

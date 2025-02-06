@@ -1,23 +1,32 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common'; // Import CommonModule
 
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css'],
   standalone: true,
+  imports: [CommonModule], // Add CommonModule here
 })
-export class NavbarComponent implements OnInit {
-  cartCount: number = 0;
+export class NavbarComponent {
+  isLoggedIn: boolean = false;
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
-    this.updateCartCount();
-    window.addEventListener('storage', () => this.updateCartCount()); // Listen for cart updates
+    this.checkLoginStatus();
+    window.addEventListener('storage', () => this.checkLoginStatus());
   }
 
-  updateCartCount() {
-    const cart = JSON.parse(localStorage.getItem('cart') || '[]');
-    this.cartCount = cart.length;
+  checkLoginStatus() {
+    this.isLoggedIn = !!localStorage.getItem('token');
+  }
+
+  logout() {
+    localStorage.removeItem('token');
+    window.dispatchEvent(new Event('storage'));
+    this.router.navigate(['/login']);
+    alert('Logged out successfully!');
   }
 }

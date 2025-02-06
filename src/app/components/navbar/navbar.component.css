@@ -1,14 +1,10 @@
-/* navbar.component.css */
-.nav-link {
-    color: #fff !important; /* Ensures all links are white */
+.navbar .btn {
+    padding: 5px 10px;
+    font-size: 14px;
   }
   
-  .nav-link:hover {
-    color: #ccc !important; /* Light grey on hover for better visibility */
-  }
-  
-  /* Specific style for the login link if needed */
-  .login-link {
-    font-weight: bold;
+  .navbar .btn:hover {
+    background-color: #dc3545;
+    color: white;
   }
   

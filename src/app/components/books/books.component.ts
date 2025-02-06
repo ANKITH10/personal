@@ -1,48 +1,66 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router'; // Import Router for navigation
+import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-books',
   templateUrl: './books.component.html',
   styleUrls: ['./books.component.css'],
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, HttpClientModule],
 })
 export class BooksComponent implements OnInit {
-  books = [
-    { id: 1, title: 'The Great Gatsby', author: 'F. Scott Fitzgerald', price: 499, imageUrl: 'https://images.unsplash.com/photo-1532012197267-da84d127e765' },
-    { id: 2, title: '1984', author: 'George Orwell', price: 399, imageUrl: 'https://images.unsplash.com/photo-1529482697261-381a79a99e49' },
-    { id: 3, title: 'To Kill a Mockingbird', author: 'Harper Lee', price: 299, imageUrl: 'https://images.unsplash.com/photo-1495446815901-a7297e633e8d' },
-    { id: 4, title: 'Pride and Prejudice', author: 'Jane Austen', price: 450, imageUrl: 'https://images.unsplash.com/photo-1509021436665-8f07dbf5bf1d' },
-    { id: 5, title: 'Moby-Dick', author: 'Herman Melville', price: 350, imageUrl: 'https://images.unsplash.com/photo-1512820790803-83ca734da794' }
-  ];
-
+  books: any[] = [];
+  filteredBooks: any[] = [];
   searchQuery: string = '';
-  filteredBooks = [...this.books];
+  private baseUrl = 'http://localhost:8080/api/books';
 
-  constructor(private router: Router) {} // Inject Router for navigation
+  private http = inject(HttpClient); // ✅ Ensure HttpClient is injected properly
+  private router = inject(Router);   // ✅ Ensure Router is injected properly
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.fetchBooks();
+  }
 
+  // ✅ Fetch books with authentication
+  fetchBooks() {
+    this.http.get<any[]>(this.baseUrl).subscribe({
+      next: (data) => {
+        // Ensure image URLs are properly prefixed if stored as relative paths
+        this.books = data.map(book => ({
+          ...book,
+          imageUrl: `http://localhost:8080${book.imageUrl}` // Convert relative paths to absolute URLs
+        }));
+        this.filteredBooks = [...this.books];
+      },
+      error: (err) => console.error('Failed to fetch books:', err),
+    });
+  }
+  
+
+  // ✅ Filter books by search query
   filterBooks() {
     this.filteredBooks = this.books.filter(book =>
       book.title.toLowerCase().includes(this.searchQuery.toLowerCase())
     );
   }
 
+  // ✅ Add book to cart
   addToCart(book: any) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      alert('You need to log in first!');
+      this.router.navigate(['/login']);
+      return;
+    }
+
     let cart = JSON.parse(localStorage.getItem('cart') || '[]');
     cart.push(book);
     localStorage.setItem('cart', JSON.stringify(cart));
 
-    window.dispatchEvent(new Event('storage')); // Notify navbar to update count
+    window.dispatchEvent(new Event('storage'));
 
     alert(`"${book.title}" added to cart!`);
-  }
-
-  goToCart() {
-    this.router.navigate(['/cart']); // Navigate to cart page
   }
 }
